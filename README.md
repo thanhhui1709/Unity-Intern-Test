@@ -1,113 +1,129 @@
 Unity Intern Test
 Task 1: Re-skin
 
-Go to the prefab folder and replace all item sprites with fish sprites.
+Go to Prefabs.
 
-Task 2: Game Feature Implementation
-Step 1: Create Bottom Row Object
+Replace all item sprites with fish sprites.
 
-Create a new class BottomRow.
+Task 2: Core Features
+Step 1: Bottom Row
 
-Assign its transform and configure its settings inside GameSettings.
+Create a new class: BottomRow.
 
-In GameSettings, add a new parameter: bottomCellSize.
+Configure its Transform.
 
-Step 2: Disable Item Dragging on the Board
+In GameSettings, add a new variable: bottomCellSize.
 
-In BoardController, comment out (or disable) all methods related to item movement/interaction such as:
+Step 2: Disable Dragging on Board
 
-Hint
+In BoardController:
 
-Collapse
+Comment out all functions related to item movement/interaction (e.g. Hint, Collapse, ShiftDown, …).
 
-ShiftDown
+Goal: Items should spawn only once and remain static (no interaction with each other).
 
-… and any other similar functions.
+Step 3: Bottom Cell Features
 
-Purpose: Items should only spawn once and cannot interact with each other.
+AddToBottom: Handles selecting an item → moves it down into the bottom row.
 
-Step 3: Add Features to Bottom Cell
+CheckMatch:
 
-Implement the following functions inside BottomCell:
+If 3 or more items in the bottom row match → destroy them.
 
-AddToBottom: Handle logic when an item is selected and moved into the bottom row.
+Remaining items shift left to fill empty spaces.
 
-CheckMatch: Check if items in the bottom row match. If yes → remove them and shift the remaining items to the left.
+ShiftLeft: Push items left if there are gaps.
 
-ShiftLeft: Shift items left if there are empty spaces.
+ShiftRight:
 
-ShiftRight: If a new item from the board matches one already in the bottom row, insert it and push other items to the right.
+If a selected board item matches an item in the bottom row,
+
+Insert it and push the other items to the right.
 
 CheckEmptyItem / CheckFullItem:
 
-Check whether the bottom row still has free space.
+Detect if bottom row is empty or full.
 
-If the row is full → trigger the Lose condition.
+If full → trigger Lose condition.
 
-Step 4: Adjust Gameplay Rules
+Step 4: Gameplay Adjustments
 
-Board size: Change rows and columns to 6x6 for balance and to ensure enough item types.
+Change board size to 6x6 for balance.
 
-Spawn rule:
+New Spawn function (replacing old one):
 
-Replace the old spawn logic with a new one:
+Each item type count must be divisible by 3.
 
-Each item type must spawn in multiples of 3 (e.g. 3, 6, 9, …).
+Start by spawning 3 of each item type.
 
-First, spawn 3 of each type.
+Randomly generate the rest.
 
-Then, spawn the remaining items randomly, ensuring the total count of each type is divisible by 3.
+Ensure total count per type is divisible by 3.
 
-After spawning → run the existing Shuffle() function to randomize.
+Shuffle the board using the provided Shuffle() function.
 
-Step 5: Auto Win / Auto Lose Features
+Step 5: Auto Win / Lose
 
-AutoWin: Automatically pick matching items until all are cleared.
+AutoWin: Automatically select matching items until the board is cleared.
 
-AutoLose: Automatically pick non-matching items until the bottom row is full and no matches are possible.
+AutoLose: Automatically select mismatched items → bottom row fills up with non-matching items.
 
-GameManager changes:
+GameManager updates:
 
-Add public GetLevelType() to customize gameplay for different modes.
+Add a public method: GetLevelType().
 
-Move Mode: Lose if the bottom row is full. Items cannot be added back once placed.
+Used to customize gameplay by mode:
 
-Time Mode: The game continues even if the bottom row is full. Items can still be added.
+Move Mode:
 
-Update BoardController input handling to respect these conditions.
+Lose if bottom row is full.
 
-UI changes:
+Do not allow adding items back once they are dropped.
 
-In UIPanelGame, add two new buttons: Auto Win and Auto Lose.
+Time Mode:
 
-Subscribe their events to trigger AutoWin() and AutoLose() in UIManager → GameManager.
+Continue playing even if bottom row is full.
 
-Step 6: Display Win / Lose States
+Allow adding items again.
 
-Add new game states: Win and Lose.
+UI Updates:
 
-Initially, only Win screen is shown on game end → split them into two states.
+In UIPanelGame:
 
-In GameManager:
+Add 2 new buttons → Auto Win & Auto Lose.
 
-Add a state parameter for WaitBoardController.
+Subscribe them to events that trigger auto play modes.
 
-Add a state parameter for OnConditionComplete in LevelCondition.
+In UIMainManager:
 
-Create a new UI panel:
+Add methods AutoWin() and AutoLose() → call corresponding methods in GameManager.
 
-UIPanelGameWin → for win screen.
+Step 6: Display Win / Lose
 
-UIPanelGameOver → for lose screen.
+Extend game states in GameManager: add Win and Lose.
 
-Task 3: Separate Game Modes
+Separate panels:
 
-Since the code is already optimized, just separate the modes into two different buttons.
+UIPanelGameWin: shows Win Screen.
 
-Add a new button and assign it to Timer Mode.
+UIPanelGameOver: shows Lose Screen.
 
-When the timer runs out, the game state changes to Game Over (instead of default Win).
+Update logic:
 
-Animations:
+Add a parameter state in WaitBoardController (GameManager).
 
-Use DoTween for all item movement animations.
+Add state parameter in OnConditionComplete (LevelCondition).
+
+These decide which panel to display (Win or Lose).
+
+Task 3: Additional Requirements
+
+Split the two modes into separate buttons:
+
+Add a new button in the main menu for Timer Mode.
+
+When time runs out → trigger Game Over (instead of default Win).
+
+Item movement animations:
+
+Use DoTween for smooth transitions.
